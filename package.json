@@ -1,0 +1,19 @@
+{
+    "name": "Live_reload_page",
+    "description": "A web app made to use jQuery",
+    "author": "Raynulfo_Mata",
+    "version": "0.1.0",
+    "dependencies": {
+        "express": "^4.17.1",
+        "mongoose": "^5.12.1"
+    },
+    "devDependencies": {
+        "dotenv": "^8.2.0",
+        "nodemon": "^2.0.7"
+    },
+    "scripts": {
+        "start": "node server.js",
+        "start_local": "node -r dotenv/config ./back/server.js",
+        "serve-front": "node -r dotenv/config ./front/server.js"
+    }
+}

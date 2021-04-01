@@ -1,0 +1,190 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+main {
+    padding-top: 10vh;
+    display: flex;
+    justify-content: center;
+    background-color: #fffd86;
+    min-height: 100vh;
+}
+form {
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    justify-content: space-around;
+    background-color: cornflowerblue;
+    border-radius: 0.2rem;
+    width: 33vw;
+    height: 50vh;
+    overflow: auto;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.form-element {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 10%;
+    font-size: 1.6rem;
+}
+
+.form-element > input {
+    padding: 0.1em 0.2em;
+    border-radius: 0.3rem;
+    border: 0.1rem solid rgb(0,0,0);
+    box-shadow: 0px 2px 2px rgba(0,0,0,0.5);
+    width: 65%;
+    min-height: 2.5rem;
+    /* font-size: inherit; */
+    font: inherit;
+}
+
+.form-element > select {
+    padding: 0.1em 0.2em;
+    border-radius: 0.3rem;
+    border: 0.1rem solid rgb(0,0,0);
+    box-shadow: 0px 2px 2px rgba(0,0,0,0.5);
+    width: 65%;
+    min-height: 2.5rem;
+    /* font-size: inherit; */
+    font: inherit;
+}
+
+.radio-input {
+    display: flex;
+    justify-content: flex-start;
+    font-size: 1.6rem;
+}
+.radio-input > span {
+    margin: 0 10%;
+}
+.radio-input > div {
+    margin: 0 10%;
+    display: flex;
+    align-items: center;
+}
+.radio-input  label {
+    margin: 0 5% 0 0;
+}
+
+.form-element > textarea {
+    width: 65%;
+}
+
+button {
+    width: 10vw;
+    min-width: fit-content;
+    align-self: center;
+    font: inherit;
+    font-size: 1.6rem;
+    margin: 0.2rem;
+}
+.sign-in-element:hover {
+    
+}
+
+
+.display-section {
+    margin: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 1.6rem;
+    background-color: darkkhaki;
+    border-radius: 2px;
+    width: 33vw;
+    height: 50vh;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);  
+    /* overflow: auto;  */
+}
+
+div.display-user{
+    min-width: 90%;
+    margin: 2rem 1%;
+    height: 2.5rem;
+    /* padding: 0.1rem; */
+    background-color: #ffff;
+    border-style: solid;
+    border-radius: 0.3rem;
+    border-width: 0.1rem;
+    overflow: auto;
+    box-shadow: 0px 2px 2px rgba(0,0,0,0.5);
+    display: flex;
+}
+
+.display-info {
+    width: 90%;
+    margin: 2rem 1%;
+    height: 60%;
+    background-color: #ffff;
+    box-shadow: 0px 2px 2px rgba(0,0,0,0.5);
+    border: 0.1rem solid black;
+    /* border-top: none; */
+    border-radius: 0.3rem;
+    overflow: auto;
+    resize: vertical;
+}
+.display-info table{
+    width: 100%;
+    table-layout: fixed;
+    margin: -0.1rem;
+    border-radius: 0.3rem;
+}
+
+.display-info th {
+    /* vertical-align: top; */
+}
+
+.display-info tr {
+    text-align: center;
+}
+
+table,th,td {
+    border: 0.1rem solid black;
+    border-collapse: collapse;
+}
+
+.big-cell {
+    width: 25%;
+}
+
+.big-cell+th {
+    width: 35%;
+}
+
+td {
+    overflow: auto;
+}
+
+.comment-box {
+    /* padding: 0.5rem; */
+    resize: vertical;
+    vertical-align: top;
+    overflow: auto;
+    min-height: 15rem;
+    /* border-radius: 5px; */
+    border-radius: 0.3rem;
+    border: 0.1rem solid rgb(0,0,0);
+    box-shadow: 0px 2px 2px rgba(0,0,0,0.5);
+    font: inherit;
+}
+
+.form-element .error {
+    border: 0.3rem solid #bf0f0f;
+}
+
+.form-element .success {
+    border: 0.3rem solid #0fb00f;
+}
+

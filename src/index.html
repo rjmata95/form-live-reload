@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="index.css">
+    <title>chat with login</title>
+</head>
+<body>
+    <script src="./index.js"></script>
+    <main>
+        <form>
+            <label for="name" class="form-element">
+                <span>Full name</span>
+                <input type="text" name="name" id="name" autocomplete="name" >
+            </label>
+            <label for="e-mail" class="form-element">
+                <span>e-mail</span>
+                <input type="text" name="e-mail" id="e-mail" autocomplete="email" >
+            </label>
+            <label for="role" class="form-element">
+                <span>role</span>
+                <select name="role" id="role" >
+                    <option value="none">Select Your Role</option>
+                    <option value="FDJr">Front-end Developer Jr</option>
+                    <option value="FDSr">Front-end Developer Sr</option>
+                    <option value="BDJr">Back-end Developer Jr</option>
+                    <option value="BDSr">Back-end Developer Sr</option>
+                    <option value="PM">Product Manager</option>
+                    <option value="RA">Risks Analyst</option>
+                    <option value="UID">UI Designer</option>
+                    <option value="UXD">UX Designer</option>
+                </select>
+            </label>
+            <label for="dob" class="form-element">
+                <span>Date of Birth</span>
+                <input type="date" name="dob" id="dob">
+            </label>
+            <label for="gender" class="radio-input" id="gender">
+                <span>gender</span>
+                <div>
+                    <input type="radio" class="radio-input" id="male" name="gender" value="male">
+                    <label for="male">Male</label>
+                    <input type="radio" class="radio-input" id="female" name="gender" value="female">
+                    <label for="female">Female</label>
+                    <input type="radio" class="radio-input" id="other" name="gender" value="other">
+                    <label for="other">Other</label>
+                </div>
+            </label>
+            <label for="comments" class="form-element">
+                <span>comments</span>
+                <textarea maxlength="250" class="comment-box" name="comments" id="comment" placeholder="Type your comments" ></textarea>
+            </label>
+            <button class="" id="submit-btn">submit 2</button>
+            <!-- <input type="submit" class="form-element" id="log-in" value="log-in"> -->
+        </form>
+        <section class="display-section">
+            <h1>Display Section</h1>
+            <div class="display-user" id="display-username">
+                <p id="display-username"></p>
+            </div>
+            <div class="display-info">
+                <table id="display-content">
+                    <tr>
+                      <th class="big-cell">Employee Name</th>
+                      <th>E-mail</th> 
+                      <th>Role</th>
+                      <th>DoB</th>
+                      <th>Gender</th>
+                    </tr>
+                  </table>
+            </div>
+            <button id="store-btn">Store</button>
+            <button id="retrieve-btn">Retrieve</button>
+
+        </section>
+    </main>
+</body>
+</html>
