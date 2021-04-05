@@ -188,3 +188,6 @@ td {
     border: 0.3rem solid #0fb00f;
 }
 
+.selected {
+    background-color: #0000FF;
+}

@@ -16,21 +16,20 @@ $(() => {
     
     var $displayContent = $section.find('#display-content')
 
-    var $displayName = $('#display-name')
-    var $displayEmail = $('#display-email')
-    var $displayRole = $('#display-role')
-    var $displayDOB = $('#display-dob')
-    var $displayGender = $('#display-gender')
-
     var $storeBtn = $section.find('#store-btn')
     var $retrieveBtn = $section.find('#retrieve-btn')
 
-
+    $displayContent.children().on('click','tr', (ev) => {
+        if(ev.target.parentNode !== $displayContent.find('tr:first')[0])
+            $(ev.target.parentNode).toggleClass('selected')
+            // ev.target.parentNode.classList.toggle('selected')
+    })
     $().ajaxError((e,jqxhr,settings,err)=>{
         alert(`there was an Ajax error: ${err}`)
         console.log(e)
     })
 
+    retrieveFromDB($displayContent)
 
     $storeBtn.on('click', async () => {
         try {
@@ -46,7 +45,11 @@ $(() => {
 
     $retrieveBtn.on('click', async () => {
         try {
-            var val = await jqRequest('get',{msg: 'retrieve'},SERVER_URL)
+            var val = await jqRequest('get',{msg: ''},SERVER_URL)
+            console.log(val)
+            $displayContent.find('tr:first').siblings().remove()
+            $displayContent.append(formatData(val))
+
             $comment.val(val)
         }catch(err){
             console.error(`Error with da Promise: ${err}`)
@@ -64,96 +67,16 @@ $(() => {
         let dob = $dob.val()
         let gender = $gender.find('input[name="gender"]:checked').val()
         var nameValid,emailValid,dobValid,roleValid,genderValid
-        let comment = $comment.val().trim()
         
-        if (name === '') {
-            $name.removeClass('success')
-            $name.addClass('error')
-            nameValid = false
-
-        } else {
-            $name.removeClass('error')
-            $name.addClass('success')
-            nameValid = true
-            $('#display-username').text(name)
-        }
-
-        if (email === '') {
-            $email.removeClass('success')
-            $email.addClass('error')
-            emailValid = false
-
-        } else if (!isEmail(email)) {
-            $email.removeClass('success')
-            $email.addClass('error')
-            emailValid = false
-
-        } else {
-            $email.removeClass('error')
-            $email.addClass('success')
-            emailValid = true
-
-        }
-
-        if (role === 'none'){
-            $role.removeClass('success')
-            $role.addClass('error')
-            roleValid = false
-
-        } else {
-            $role.removeClass('error')
-            $role.addClass('success')
-            roleValid = true
-
-        }
-
-        if (dob === ''){
-            $dob.removeClass('success')
-            $dob.addClass('error')
-            dobValid = false
-
-        }else {
-            let parts = dob.split("-");
-            var dtDOB = new Date(parts[0],parts[1],parts[2]);
-            var dtCurrent = new Date();
-            if (80 < dtCurrent.getFullYear() - dtDOB.getFullYear() || dtCurrent.getFullYear() - dtDOB.getFullYear() < 18) {
-                $dob.removeClass('success')
-                $dob.addClass('error')
-                dobValid = false
-
-            } else {
-                $dob.removeClass('error')
-                $dob.addClass('success')
-                dobValid = true
-
-            }
-            
-        }
-
-        if (gender === undefined){
-            $gender.removeClass('success')
-            $gender.addClass('error')
-            genderValid = false
-
-        } else {
-            $gender.removeClass('error')
-            $gender.addClass('success')
-            genderValid = true
-
-            
-        }
+        nameValid = validateName(name,$name)
+        emailValid = validateEmail(email,$email)
+        roleValid = validateRole(role,$role)
+        dobValid = validateDOB(dob,$dob)
+        genderValid = validateGender(gender,$gender)
+        
         
         if (nameValid && emailValid && roleValid && dobValid && genderValid){
-            
-            let toAppend = `<tr>
-                            <td>${name}</td>
-                            <td>${email}</td>
-                            <td>${role}</td>
-                            <td>${dob}</td>
-                            <td>${gender}</td>
-                            </tr>`
-            $displayContent.append(toAppend)
-            
+                            
             let dataJSON = {
                 name,
                 email,
@@ -162,25 +85,13 @@ $(() => {
                 gender
             }
 
+            $displayContent.append(formatData(dataJSON))
+            
             jqRequest('POST',dataJSON,SERVER_URL)
 
+            resetForm($name,$email,$comment,$role,$dob,$gender)
+
             
-
-            $name.val('')
-            $email.val('')
-            $comment.val('') 
-            $role.val('none')
-            $dob.val(undefined)
-            $gender.find("input:radio[name=gender]:checked").prop('checked', false)
-
-            // $gender.find("input:radio[name=gender]:checked")[0].checked = false;
-
-            $name.removeClass('success')
-            $email.removeClass('success')
-            $comment.removeClass('success') 
-            $role.removeClass('success')
-            $dob.removeClass('success')
-            $gender.removeClass('success')
         }
     
     })
@@ -209,4 +120,134 @@ const jqRequest = function (method, data, url){
         console.log(res)
         return res
     })
+}
+
+const formatData = function(data){
+
+    if (!Array.isArray(data))
+        data = [data]
+    let jsonToHTML = data.map((obj) => {
+        let date = new Date(obj.dob)
+        date = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate()
+        return `<tr>
+        <td>${obj.name}</td>
+        <td>${obj.email}</td>
+        <td>${obj.role}</td>
+        <td>${date}</td>
+        <td>${obj.gender}</td>
+        </tr>`
+    })
+    return jsonToHTML.join('')
+}
+
+function validateName(name,$name) {
+    if (name === '') {
+        $name.removeClass('success')
+        $name.addClass('error')
+        return false
+
+    } else {
+        $name.removeClass('error')
+        $name.addClass('success')
+        return true
+    }
+
+}
+function validateEmail(email,$email) {
+    if (email === '') {
+        $email.removeClass('success')
+        $email.addClass('error')
+        return false
+    
+    } else if (!isEmail(email)) {
+        $email.removeClass('success')
+        $email.addClass('error')
+        return false
+    
+    } else {
+        $email.removeClass('error')
+        $email.addClass('success')
+        return true
+    
+    }
+
+}
+
+function validateRole(role,$role) {
+    if (role === 'none'){
+        $role.removeClass('success')
+        $role.addClass('error')
+        return false
+
+    } else {
+        $role.removeClass('error')
+        $role.addClass('success')
+        return true
+
+    }
+}
+
+function validateDOB (dob,$dob) {
+    if (dob === ''){
+        $dob.removeClass('success')
+        $dob.addClass('error')
+        return false
+
+    }else {
+        let parts = dob.split("-");
+        var dtDOB = new Date(parts[0],parts[1],parts[2]);
+        var dtCurrent = new Date();
+        if (80 < dtCurrent.getFullYear() - dtDOB.getFullYear() || dtCurrent.getFullYear() - dtDOB.getFullYear() < 18) {
+            $dob.removeClass('success')
+            $dob.addClass('error')
+            return false
+
+        } else {
+            $dob.removeClass('error')
+            $dob.addClass('success')
+            return true
+
+        }
+        
+    }
+}
+
+function validateGender (gender,$gender) {
+    if (gender === undefined){
+        $gender.removeClass('success')
+        $gender.addClass('error')
+        return false
+
+    } else {
+        $gender.removeClass('error')
+        $gender.addClass('success')
+        return true
+        
+    }
+}
+
+function resetForm (name,email,comment,role,dob,gender) {
+    name.val('')
+    email.val('')
+    comment.val('') 
+    role.val('none')
+    dob.val(undefined)
+    gender.find("input:radio[name=gender]:checked").prop('checked', false)
+
+    name.removeClass('success')
+    email.removeClass('success')
+    comment.removeClass('success') 
+    role.removeClass('success')
+    dob.removeClass('success')
+    gender.removeClass('success')
+}
+
+async function retrieveFromDB ($table){
+    try {
+        var val = await jqRequest('get',{msg: ''},SERVER_URL)
+        $table.find('tr:first').siblings().remove()
+        $table.append(formatData(val))
+    }catch(err){
+        console.error(`Error with da Promise: ${err}`)
+    }
 }
