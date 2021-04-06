@@ -16,7 +16,7 @@ $(() => {
     
     var $displayContent = $section.find('#display-content')
 
-    var $storeBtn = $section.find('#store-btn')
+    var $deleteBtn = $section.find('#delete-btn')
     var $retrieveBtn = $section.find('#retrieve-btn')
 
     $displayContent.children().on('click','tr', (ev) => {
@@ -30,31 +30,36 @@ $(() => {
     })
 
     retrieveFromDB($displayContent)
+        .then(msg => $comment.val(msg))
+        .catch(err => $comment.val(err))
 
-    $storeBtn.on('click', async () => {
-        try {
-            var val = await jqRequest('post',{msg: 'store'},SERVER_URL)
-            console.log(`arriba ${val}`)
-            $comment.val(val)
-        }catch(err){
-            console.log(`arriba pero en el catch ${err}`)
-            
-            console.error(`Error with da Promise: ${err}`)
-        }
+    $deleteBtn.on('click', () => {
+        
+        jqRequest('delete',{msg: 'store'},SERVER_URL)
+            .then(val => {
+                $comment.val(val)
+                console.log(`arriba ${val}`)
+            })
+            .catch(err => {
+                console.log(err)
+                // $comment.val(err)
+                console.error(`Error with da Promise`)
+            })
+        
     })
 
-    $retrieveBtn.on('click', async () => {
-        try {
-            var val = await jqRequest('get',{msg: ''},SERVER_URL)
-            console.log(val)
-            $displayContent.find('tr:first').siblings().remove()
-            $displayContent.append(formatData(val))
+    // $retrieveBtn.on('click', async () => {
+    //     try {
+    //         var val = await jqRequest('get',{msg: ''},SERVER_URL)
+    //         console.log(val)
+    //         $displayContent.find('tr:first').siblings().remove()
+    //         $displayContent.append(formatData(val))
 
-            $comment.val(val)
-        }catch(err){
-            console.error(`Error with da Promise: ${err}`)
-        }
-    })
+    //         $comment.val(val)
+    //     }catch(err){
+    //         console.error(`Error with da Promise: ${err}`)
+    //     }
+    // })
     
     $form.on('submit', (ev) => {
             
@@ -85,11 +90,16 @@ $(() => {
                 gender
             }
 
-            $displayContent.append(formatData(dataJSON))
             
             jqRequest('POST',dataJSON,SERVER_URL)
+                .then( () => {
+                    $displayContent.append(formatData(dataJSON))
+                    resetForm($name,$email,$comment,$role,$dob,$gender)
+                })
+                .catch( err => {
+                    $comment.val(`Couldnt reach server ${err}`)
+                })
 
-            resetForm($name,$email,$comment,$role,$dob,$gender)
 
             
         }
@@ -104,22 +114,23 @@ const isEmail = function(email) {
 
 const jqRequest = function (method, data, url){
     data = JSON.stringify(data)
-    return $.ajax({
-        url,
-        method,
-        data,
-        contentType: 'application/json',
-        // dataType: 'json'
-    })
-    .then((res)=>{
-        console.log(`response from server: ${res.body}`)
-        return res.body
-    })
-    .fail((res)=>{
-        console.error(`request error: ${res}`)
-        console.log(res)
-        return res
-    })
+    return new Promise((resolve,reject) => {
+        $.ajax({
+            url,
+            method,
+            data,
+            contentType: 'application/json',
+            // dataType: 'json'
+        })
+        .then((res)=>{
+            console.log(res.body)
+            resolve(res.body) 
+        })
+        .fail((res)=>{
+            console.error(res)
+            reject(res) 
+        }) 
+    }) 
 }
 
 const formatData = function(data){
@@ -138,6 +149,22 @@ const formatData = function(data){
         </tr>`
     })
     return jsonToHTML.join('')
+}
+
+function retrieveFromDB ($table){
+    return new Promise((resolve,reject) => {
+        jqRequest('get',{msg: ''},SERVER_URL)
+            .then(val => {
+                $table.find('tr:first').siblings().remove()
+                $table.append(formatData(val))
+                resolve(`Everything is working fine`)
+            })
+            .catch(err => {
+                console.error(`Couldnt reach Server: ${err}`)
+                reject(`Couldnt reach Server`)
+            })
+
+    })
 }
 
 function validateName(name,$name) {
@@ -242,12 +269,3 @@ function resetForm (name,email,comment,role,dob,gender) {
     gender.removeClass('success')
 }
 
-async function retrieveFromDB ($table){
-    try {
-        var val = await jqRequest('get',{msg: ''},SERVER_URL)
-        $table.find('tr:first').siblings().remove()
-        $table.append(formatData(val))
-    }catch(err){
-        console.error(`Error with da Promise: ${err}`)
-    }
-}
