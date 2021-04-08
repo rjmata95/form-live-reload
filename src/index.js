@@ -1,5 +1,5 @@
 const SERVER_URL = 'http://localhost:8080/table'
-// const SERVER_URL = 'test.txt'
+var idArray  = []
 
 
 
@@ -22,6 +22,7 @@ $(() => {
     $displayContent.children().on('click','tr', (ev) => {
         if(ev.target.parentNode !== $displayContent.find('tr:first')[0])
             $(ev.target.parentNode).toggleClass('selected')
+            
             // ev.target.parentNode.classList.toggle('selected')
     })
     $().ajaxError((e,jqxhr,settings,err)=>{
@@ -30,19 +31,29 @@ $(() => {
     })
 
     retrieveFromDB($displayContent)
-        .then(msg => $comment.val(msg))
+        .then(msg => {
+            $comment.val(msg)
+        })
         .catch(err => $comment.val(err))
 
-    $deleteBtn.on('click', () => {
-        
-        jqRequest('delete',{msg: 'store'},SERVER_URL)
+    $deleteBtn.on('click', async () => {
+
+        var x = $displayContent.find('.selected')
+        // x.find('td:hidden').each((i,elem) => {
+        //     selected.push(elem.innerHTML)
+        // })
+        // console.log(selected)
+ 
+        let idsSelected = await getIdsToDelete($displayContent)
+
+
+        jqRequest('delete',{msg: idsSelected},SERVER_URL)
             .then(val => {
                 $comment.val(val)
                 console.log(`arriba ${val}`)
             })
             .catch(err => {
                 console.log(err)
-                // $comment.val(err)
                 console.error(`Error with da Promise`)
             })
         
@@ -92,8 +103,11 @@ $(() => {
 
             
             jqRequest('POST',dataJSON,SERVER_URL)
-                .then( () => {
+                .then( (res) => {
+                    console.log(res)
                     $displayContent.append(formatData(dataJSON))
+                    saveId(res)
+                    console.log(idArray)
                     resetForm($name,$email,$comment,$role,$dob,$gender)
                 })
                 .catch( err => {
@@ -141,6 +155,7 @@ const formatData = function(data){
         let date = new Date(obj.dob)
         date = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate()
         return `<tr>
+        <td hidden>${obj._id}</td>
         <td>${obj.name}</td>
         <td>${obj.email}</td>
         <td>${obj.role}</td>
@@ -154,9 +169,10 @@ const formatData = function(data){
 function retrieveFromDB ($table){
     return new Promise((resolve,reject) => {
         jqRequest('get',{msg: ''},SERVER_URL)
-            .then(val => {
+            .then(data => {
                 $table.find('tr:first').siblings().remove()
-                $table.append(formatData(val))
+                $table.append(formatData(data))
+                saveId(data)
                 resolve(`Everything is working fine`)
             })
             .catch(err => {
@@ -165,6 +181,29 @@ function retrieveFromDB ($table){
             })
 
     })
+}
+function saveId (data) {
+    if (!Array.isArray(data))
+        data = [data]
+    data.forEach((obj) => {
+       idArray.push({
+            _id: obj._id
+        }) 
+    }) 
+    
+}
+
+function getIdsToDelete($displayContent){
+    let idArray = []
+    let $selected = $displayContent.find('.selected')
+        
+    $selected.find('td:hidden')
+        .each((index,elem) => {
+            console.log(elem.innerHTML)
+            idArray.push(elem.innerHTML)
+        })
+        console.log(idArray)
+    return idArray
 }
 
 function validateName(name,$name) {

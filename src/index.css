@@ -189,5 +189,9 @@ td {
 }
 
 .selected {
-    background-color: #0000FF;
+    background-color: #00A0F0;
+}
+
+.hidden {
+    display: none;
 }
