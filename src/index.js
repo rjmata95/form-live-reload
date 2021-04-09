@@ -38,23 +38,19 @@ $(() => {
 
     $deleteBtn.on('click', async () => {
 
-        var x = $displayContent.find('.selected')
-        // x.find('td:hidden').each((i,elem) => {
-        //     selected.push(elem.innerHTML)
-        // })
-        // console.log(selected)
+        var $selected = $displayContent.find('.selected')
  
-        let idsSelected = await getIdsToDelete($displayContent)
+        let idsSelected = await getIdsToDelete($selected)
 
 
         jqRequest('delete',{msg: idsSelected},SERVER_URL)
             .then(val => {
                 $comment.val(val)
-                console.log(`arriba ${val}`)
+                $selected.remove()
             })
             .catch(err => {
-                console.log(err)
-                console.error(`Error with da Promise`)
+                $comment.val(err.error)
+
             })
         
     })
@@ -104,10 +100,8 @@ $(() => {
             
             jqRequest('POST',dataJSON,SERVER_URL)
                 .then( (res) => {
-                    console.log(res)
                     $displayContent.append(formatData(dataJSON))
                     saveId(res)
-                    console.log(idArray)
                     resetForm($name,$email,$comment,$role,$dob,$gender)
                 })
                 .catch( err => {
@@ -137,12 +131,10 @@ const jqRequest = function (method, data, url){
             // dataType: 'json'
         })
         .then((res)=>{
-            console.log(res.body)
             resolve(res.body) 
         })
         .fail((res)=>{
-            console.error(res)
-            reject(res) 
+            reject(res.responseJSON) 
         }) 
     }) 
 }
@@ -193,16 +185,13 @@ function saveId (data) {
     
 }
 
-function getIdsToDelete($displayContent){
+function getIdsToDelete($selected){
     let idArray = []
-    let $selected = $displayContent.find('.selected')
         
     $selected.find('td:hidden')
         .each((index,elem) => {
-            console.log(elem.innerHTML)
             idArray.push(elem.innerHTML)
         })
-        console.log(idArray)
     return idArray
 }
 
